@@ -17,8 +17,8 @@ export default function Button({ children, variant = "primary", className = "", 
   };
   if (href) {
     return (
-      <Link href={href} legacyBehavior passHref>
-        <a className={`${base} ${variants[variant]} ${className}`}>{children}</a>
+      <Link href={href} className={`${base} ${variants[variant]} ${className}`}>
+        {children}
       </Link>
     );
   }
