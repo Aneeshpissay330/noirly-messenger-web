@@ -6,7 +6,7 @@ export default function NoirlyMessengerPrivacyPolicy() {
       <div className="privacy-body">
         <div className="privacy-container">
           <h1 className="privacy-h1">Privacy Policy</h1>
-          <div className="privacy-meta">Last updated: <span className="privacy-highlight">October 16, 2025</span> — Noirly Messenger by <strong>Aneesh Pissay</strong></div>
+          <div className="privacy-meta">Last updated: <span className="privacy-highlight">October 26, 2025</span> — Noirly Messenger by <strong>Aneesh Pissay</strong></div>
           
           <div className="privacy-section">
             <h2 className="privacy-h2">Overview</h2>
