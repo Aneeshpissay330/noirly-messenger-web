@@ -8,6 +8,35 @@ import Stepper from "@/components/stepper";
 
 export default function LoginPage() {
   const [step, setStep] = useState(0);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+  // Handle OTP input change and auto-focus
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+    const value = e.target.value.replace(/\D/g, ""); // Only digits
+    if (!value) return;
+    const newOtp = [...otp];
+    newOtp[idx] = value[0];
+    setOtp(newOtp);
+    // Auto-focus next input
+    if (value && idx < 5) {
+      const next = document.getElementById(`otp-${idx + 1}`);
+      if (next) (next as HTMLInputElement).focus();
+    }
+    // Removed auto-advance to next step when all OTP digits are filled
+  };
+
+  const handleSendCode = () => {
+    setShowOtp(true);
+  };
+
+  // Handle OTP submit button
+  const handleOtpSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (otp.every((d) => d.length === 1)) {
+      setStep(1);
+    }
+  };
   return (
   <div className="relative flex w-full flex-1 flex-col overflow-x-hidden font-display bg-background-light text-black">
       {/* Header & Footer are part of the same layout, so only main content here */}
@@ -22,9 +51,9 @@ export default function LoginPage() {
           </div>
           {/* Right Side: Login Form */}
           <div className="flex items-center justify-center bg-white px-6 py-6">
-            <div className="max-w-md w-full">
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-black mb-3">Create your account</h1>
+            <div className="max-w-md w-full flex flex-col">
+              <div className="text-center pt-2 pb-6">
+                <h1 className="text-3xl font-bold text-black mb-2">Create your account</h1>
                 <Stepper
                   steps={["Phone Verification", "Google Account"]}
                   currentStep={step}
@@ -32,14 +61,15 @@ export default function LoginPage() {
                   className="mb-2"
                 />
               </div>
-              {step === 0 && (
+              <div className="flex-1 flex flex-col justify-center">
+              {step === 0 && !showOtp && (
                 <>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label htmlFor="phone" className="block text-sm font-medium text-black font-display mb-1 ml-1">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col justify-center items-center">
+                      <label htmlFor="phone" className="block text-sm font-medium text-black font-display mb-1 ml-1 self-start">
                         Phone Number
                       </label>
-                      <div className="flex gap-3">
+                      <div className="flex gap-3 mt-2 justify-center items-center">
                         <TextInput
                           id="country-code"
                           placeholder="+1"
@@ -53,18 +83,53 @@ export default function LoginPage() {
                           placeholder="(555) 000-1234"
                           type="tel"
                           autoComplete="tel-national"
-                          className="flex-1"
+                          className="w-64"
                           aria-label="Phone number"
                         />
                       </div>
                     </div>
                     <button
                       className="w-full h-12 px-6 rounded-lg bg-black text-white font-semibold hover:bg-slate-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                      onClick={() => setStep(1)}
+                      onClick={handleSendCode}
                     >
                       Send Code
                     </button>
                   </div>
+                </>
+              )}
+              {step === 0 && showOtp && (
+                <>
+                  <form
+                    className="flex flex-col items-center justify-center min-h-[180px] w-full"
+                    onSubmit={handleOtpSubmit}
+                  >
+                    <div className="space-y-2 w-full flex flex-col items-center">
+                      <label className="block text-sm font-medium text-black font-display mb-1 ml-1 text-center w-full">
+                        Enter 6-digit OTP
+                      </label>
+                      <div className="flex gap-2 justify-center items-center w-full">
+                        {otp.map((digit, idx) => (
+                          <input
+                            key={idx}
+                            id={`otp-${idx}`}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            className="w-12 h-12 text-center border border-slate-300 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-black"
+                            value={digit}
+                            onChange={(e) => handleOtpChange(e, idx)}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        type="submit"
+                        className="mt-4 w-full h-12 px-6 rounded-lg bg-black text-white font-semibold hover:bg-slate-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50"
+                        disabled={!otp.every((d) => d.length === 1)}
+                      >
+                        Submit OTP
+                      </button>
+                    </div>
+                  </form>
                 </>
               )}
               {step === 1 && (
@@ -77,6 +142,7 @@ export default function LoginPage() {
                   </div>
                 </>
               )}
+              </div>
             </div>
           </div>
         </main>
